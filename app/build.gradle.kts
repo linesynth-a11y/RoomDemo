@@ -1,16 +1,17 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.devtoolsKsp)
 }
 
 android {
-    namespace = "com.example.roomdemo"
+    namespace = "com.example.lab7_roomdemo"
     compileSdk {
         version = release(37)
     }
 
     defaultConfig {
-        applicationId = "com.example.roomdemo"
+        applicationId = "com.example.lab7_roomdemo"
         minSdk = 27
         targetSdk = 37
         versionCode = 1
@@ -22,7 +23,8 @@ android {
     buildTypes {
         release {
             optimization {
-                enable = false
+                enable = true
+                packageScope = setOf("androidx.**", "kotlin.**", "kotlinx.**")
             }
         }
     }
@@ -44,11 +46,15 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.runtime.livedata)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
     testImplementation(libs.junit)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
+    ksp(libs.androidx.room.room.compiler)
 }
