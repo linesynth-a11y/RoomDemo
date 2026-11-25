@@ -155,7 +155,101 @@ fun MainScreen(
     allProducts: List<Product>,
     searchResults: List<Product>,
     viewModel: MainViewModel
-) {
+){
+    var productName by remember { mutableStateOf("") }
+    var productQuantity by remember { mutableStateOf("") }
+    var searching by remember { mutableStateOf(false) }
+
+    val onProductTextChange = {
+            text: String -> productName = text
+    }
+
+    val onQuantityTextChange = {
+            text: String -> productQuantity = text
+    }
+    Column() {
+        CustomTextField(
+            title = "Product Name",
+            textState = productName,
+            onTextChange = onProductTextChange,
+            keyboardType = KeyboardType.Text
+        )
+
+        CustomTextField(
+            title = "Quantity",
+            textState = productQuantity,
+            onTextChange = onQuantityTextChange,
+            keyboardType = KeyboardType.Number
+        )
+
+        Row(
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(10.dp)
+        ){
+            Button(onClick = {
+                if (productQuantity.isNotEmpty()) {
+                    viewModel.insertProduct(
+                        Product(
+                            productName,
+                            productQuantity.toInt()
+                        )
+                    )
+                    searching = false
+                }
+            }) {
+                Text("Add")
+            }
+
+            Button(onClick = {
+                searching = true
+                viewModel.findProduct(productName)
+            }) {
+                Text("Search")
+            }
+
+            Button(onClick = {
+                searching = false
+                viewModel.deleteProduct(productName)
+            }) {
+                Text("Delete")
+            }
+
+            Button(onClick = {
+                if (searching) {
+                    searching = false
+                    productName = ""
+                    productQuantity = ""
+                    viewModel.clearSearch()
+                }
+                else {
+                    viewModel.deleteAllProducts()
+                }
+            }) {
+                Text("Clear")
+            }
+        }
+        LazyColumn(Modifier
+            .fillMaxWidth()
+            .padding(10.dp)
+        ) {
+            val list = if (searching) searchResults else allProducts
+
+            item {
+                TitleRow("ID", "Product", "Quantity")
+            }
+
+            items(list) { product ->
+                ProductRow(id = product.id, name = product.productName,
+                    quantity = product.quantity
+                )
+
+            }
+        }
+    }
+
 }
+
 
 
