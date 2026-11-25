@@ -54,13 +54,32 @@ class MainActivity : ComponentActivity() {
         setContent {
             Lab7_RoomDemoTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    ScreenSetup(modifier = Modifier.padding(innerPadding))
+                    val owner = LocalViewModelStoreOwner.current
+                    owner?.let{
+                        val viewModel: MainViewModel = viewModel(
+                            it,
+                            "MainViewModel",
+                            MainViewModelFactory(
+                                LocalContext.current.applicationContext as Application
+                            )
+                        )
+                        ScreenSetup(modifier = Modifier.padding(innerPadding),
+                            viewModel = viewModel
+                        )
+
+                    }
+
                 }
             }
         }
     }
 }
 
+class MainViewModelFactory(val application: Application): ViewModelProvider.Factory {
+    override fun <T: ViewModel> create(modelClass: Class<T>): T {
+        return MainViewModel(application) as T
+    }
+}
 
 @Composable
 fun TitleRow(head1: String, head2: String, head3: String) {
@@ -120,10 +139,23 @@ fun CustomTextField(
 
 
 @Composable
-fun ScreenSetup(modifier: Modifier = Modifier) {
-    MainScreen(modifier)
+fun ScreenSetup(modifier: Modifier = Modifier, viewModel: MainViewModel) {
+    val allProducts by viewModel.allProducts.observeAsState(listOf())
+    val searchResults by viewModel.searchResults.observeAsState(listOf())
+    MainScreen(
+        modifier = modifier,
+        allProducts = allProducts,
+        searchResults = searchResults,
+        viewModel = viewModel
+    )
 }
 @Composable
-fun MainScreen(modifier: Modifier = Modifier) {
+fun MainScreen(
+    modifier: Modifier = Modifier,
+    allProducts: List<Product>,
+    searchResults: List<Product>,
+    viewModel: MainViewModel
+) {
 }
+
 
